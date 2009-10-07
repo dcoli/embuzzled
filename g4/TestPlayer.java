@@ -2,9 +2,7 @@ package embuzzled.g4;
 
 import java.awt.Color;
 
-import embuzzled.ui.Grid;
-import embuzzled.ui.GridSolution;
-import embuzzled.ui.Player;
+import embuzzled.ui.*;
 
 public class TestPlayer implements Player{
 
