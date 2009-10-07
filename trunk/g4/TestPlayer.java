@@ -4,6 +4,7 @@ import java.awt.Color;
 
 import embuzzled.ui.*;
 
+//testing SVN mailing to google group
 public class TestPlayer implements Player{
 
 	@Override
