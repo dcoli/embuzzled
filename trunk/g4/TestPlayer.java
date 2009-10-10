@@ -48,6 +48,10 @@ public class TestPlayer implements Player{
 		Color tempc;
 		for(int loopc=0;loopc<cols;loopc++)
         {
+    		float L = (float)random.nextInt(50) + 50f;
+    		float a = (float)random.nextInt(255) - 128.0f;
+    		float b = (float)random.nextInt(255) - 128.0f;
+    		
             for(int loopr=0;loopr<rows;loopr++)
             {
             	
@@ -56,10 +60,6 @@ public class TestPlayer implements Player{
             		// 0 <= L* <= 100
             		// -128 <= a*,b* <= 127
 
-            		float L = (float)random.nextInt(50) + 50f;
-            		float a = (float)random.nextInt(255) - 128.0f;
-            		float b = (float)random.nextInt(255) - 128.0f;
-            		
             		float[] f = { L,a,b };
             		float[] rgb = ic.toRGB(f);
             		tempc = new Color( rgb[0], rgb[1], rgb[2] );
