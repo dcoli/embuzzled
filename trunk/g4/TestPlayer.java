@@ -99,7 +99,9 @@ public class TestPlayer implements Player{
 		puzzles++;
 		
 		//embed two numbers and the + sign
-		if(embedMathPuzzle(solution, rows, cols, random))
+		if(embedMathPuzzle(solution, rows, cols, random, 5, 7))
+			puzzles++;
+		if(embedMathPuzzle(solution, rows, cols, random, 2, 8))
 			puzzles++;
 		
 		solution.setNo_of_puzzles(puzzles);
@@ -115,7 +117,7 @@ public class TestPlayer implements Player{
 	 * @param random Random number generator used by our Player
 	 * @return True if the puzzle was embedded. False otherwise.
 	 */
-	private boolean embedMathPuzzle(GridSolution solution, int rows, int cols, Random random){
+	private boolean embedMathPuzzle(GridSolution solution, int rows, int cols, Random random, int first, int second){
 		//Decide color for this puzzle
 		float L = (float)random.nextInt(50);
 		float a = (float)random.nextInt(255) - 128.0f;
@@ -134,7 +136,7 @@ public class TestPlayer implements Player{
 			posx = random.nextInt(rows/2);
 			posy = random.nextInt(cols/2);
 			tries++;
-		}while(checkAvailability(posx,posy, 5, rows, cols) == false && tries < 50);
+		}while(checkAvailability(posx,posy, first, rows, cols) == false && tries < 50);
 		if(tries == 50){ //There is no space for it, free reserved cells and return false
 			freeReserved(rows, cols);
 			return false;
@@ -158,7 +160,7 @@ public class TestPlayer implements Player{
 			posx3 = random.nextInt(rows/2)+rows/2;
 			posy3 = random.nextInt(cols/2)+cols/2;
 			tries++;
-		}while(checkAvailability(posx3,posy3, 7, rows, cols) == false && tries < 50);
+		}while(checkAvailability(posx3,posy3, second, rows, cols) == false && tries < 50);
 		if(tries == 50){
 			freeReserved(rows, cols);
 			return false;
@@ -177,9 +179,9 @@ public class TestPlayer implements Player{
 		}
 		
 		//Embed all parts of the puzzle
-		fillNumber(solution, posx, posy, 5, tempc);
+		fillNumber(solution, posx, posy, first, tempc);
 		fillPlusSign(solution, posx2, posy2, tempc);		
-		fillNumber(solution, posx3, posy3, 7, tempc);
+		fillNumber(solution, posx3, posy3, second, tempc);
 		fillEqualsSign(solution, posx4, posy4, tempc);
 		return true;
 	}
