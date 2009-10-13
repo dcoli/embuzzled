@@ -15,10 +15,11 @@ import embuzzled.ui.*;
 
 public class TestPlayer implements Player{
 
+	private enum state{FREE,BLOCKED, USED, RESERVED};
 	public Logger log;
 	private ICC_ColorSpace ic;
 	private ICC_Profile ip;
-	private boolean[][] usable;
+	private state[][] usable;
 	private int puzzles;
 	
 	@Override
@@ -42,13 +43,13 @@ public class TestPlayer implements Player{
 		
 		int rows = grid.rows;
 		int cols = grid.cols;
-		usable = new boolean[rows][cols];
+		usable = new state[rows][cols];
 		for(i = 0; i < rows; i++)
 			for(int j = 0; j < cols; j++){
 				if(grid.datagrid[i][j] == true)
-					usable[i][j] = false;
+					usable[i][j] = state.BLOCKED;
 				else
-					usable[i][j] = true;
+					usable[i][j] = state.FREE;
 			}
 
 		puzzles = 0;
@@ -66,7 +67,8 @@ public class TestPlayer implements Player{
     		
             for(int loopr=0;loopr<rows;loopr++)
             {
-        		if(usable[loopr][loopc] == true){
+            	//Check if we can use the cell
+        		if(usable[loopr][loopc] == state.FREE){
 	            	if(whitePainted < whiteCols){
 	
 	            		// 0 <= L* <= 100
@@ -81,7 +83,7 @@ public class TestPlayer implements Player{
 	            	}
 	            	else{
 	            		tempc = new Color(0,0,0);
-	            		usable[loopr][loopc] = false;
+	            		//We're not marking the cell as USED because it's possible to overlap puzzles with this one
 	                    solution.GridColors[loopr][loopc] = tempc;
 	            	}
         		}
@@ -100,12 +102,21 @@ public class TestPlayer implements Player{
 		if(embedMathPuzzle(solution, rows, cols, random))
 			puzzles++;
 		
-		solution.no_of_puzzles = puzzles;
+		solution.setNo_of_puzzles(puzzles);
 		// TODO Auto-generated method stub
 		return solution;
 	}
 	
+	/*
+	 * Embed two numbers and mathematical signs to hint the user to add them
+	 * @param solution GridSolution object where we embed the puzzle
+	 * @param rows Number of rows in solution
+	 * @param cols Number of cols in solution
+	 * @param random Random number generator used by our Player
+	 * @return True if the puzzle was embedded. False otherwise.
+	 */
 	private boolean embedMathPuzzle(GridSolution solution, int rows, int cols, Random random){
+		//Decide color for this puzzle
 		float L = (float)random.nextInt(50);
 		float a = (float)random.nextInt(255) - 128.0f;
 		float b = (float)random.nextInt(255) - 128.0f;
@@ -115,25 +126,61 @@ public class TestPlayer implements Player{
 		float[] rgb = ic.toRGB(f);
 		tempc = new Color( rgb[0], rgb[1], rgb[2] );
 		
-		//embed first number, 5
-		int posx, posy;
+		int posx, posy, posx2, posy2, posx3, posy3, posx4, posy4, tries;
+		
+		//Find a place for the first number
+		tries = 0;
 		do{
 			posx = random.nextInt(rows/2);
 			posy = random.nextInt(cols/2);
-		}while(checkAvailability(posx,posy, 5, rows, cols) == false);
+			tries++;
+		}while(checkAvailability(posx,posy, 5, rows, cols) == false && tries < 50);
+		if(tries == 50){ //There is no space for it, free reserved cells and return false
+			freeReserved(rows, cols);
+			return false;
+		}
+
+		//Try to fit the + sign
+		tries = 0;
+		do{
+			posx2 = random.nextInt(rows/3)+rows/3;
+			posy2 = random.nextInt(cols/3)+cols/3;
+			tries++;
+		}while(checkAvailabilityPlus(posx2, posy2, rows, cols) == false && tries < 50);
+		if(tries == 50){
+			freeReserved(rows, cols);
+			return false;
+		}
+
+		//Try to fit the second number
+		tries = 0;
+		do{
+			posx3 = random.nextInt(rows/2)+rows/2;
+			posy3 = random.nextInt(cols/2)+cols/2;
+			tries++;
+		}while(checkAvailability(posx3,posy3, 7, rows, cols) == false && tries < 50);
+		if(tries == 50){
+			freeReserved(rows, cols);
+			return false;
+		}
+		
+		//Try to fit the = sign
+		tries = 0;
+		do{
+			posx4 = random.nextInt(rows/2)+rows/2;
+			posy4 = random.nextInt(cols/2)+cols/2;
+			tries++;
+		}while(checkAvailabilityEquals(posx4, posy4, rows, cols) == false && tries < 50);
+		if(tries == 50){
+			freeReserved(rows, cols);
+			return false;
+		}
+		
+		//Embed all parts of the puzzle
 		fillNumber(solution, posx, posy, 5, tempc);
-		//embed + sign
-		do{
-			posx = random.nextInt(rows/3)+rows/3;
-			posy = random.nextInt(cols/3)+cols/3;
-		}while(checkAvailabilityPlus(posx, posy, rows, cols) == false);
-		fillPlusSign(posx, posy, solution, tempc);
-		//embed second number, 7
-		do{
-			posx = random.nextInt(rows/2)+rows/2;
-			posy = random.nextInt(cols/2)+cols/2;
-		}while(checkAvailability(posx,posy, 7, rows, cols) == false);
-		fillNumber(solution, posx, posy, 7, tempc);
+		fillPlusSign(solution, posx2, posy2, tempc);		
+		fillNumber(solution, posx3, posy3, 7, tempc);
+		fillEqualsSign(solution, posx4, posy4, tempc);
 		return true;
 	}
 	
@@ -144,46 +191,106 @@ public class TestPlayer implements Player{
 			for(int j = posy; j < posy+2 && cells < ncells; j++){
 				if(i >= rows || j >= cols)
 					return false;
-				if(!usable[i][j])
+				if(usable[i][j] != state.FREE)
 					return false;
-				else
+				else{
 					cells++;
+					usable[i][j] = state.RESERVED;
+				}
 			}
 		
 		return true;
 	}
 	//Checks if we can use enough cells centered in posx, posy for the + sign
 	public boolean checkAvailabilityPlus(int posx, int posy, int rows, int cols){
-		for(int j = posy-1; j < posy+2; j++){
-			if(!usable[posx][j])
+		for(int j = posy-1; j < posy+2; j+=2){
+			if(j >= cols)
 				return false;
+			if(usable[posx][j] != state.FREE)
+				return false;
+			else
+				usable[posx][j] = state.RESERVED;
 		}
 		for(int i = posx-1; i < posx+2; i++){
-			if(!usable[i][posy])
+			if(i >= rows)
 				return false;
+			if(usable[i][posy] != state.FREE)
+				return false;
+			else
+				usable[i][posy] = state.RESERVED;
+		}
+		
+		return true;
+	}	
+	
+	//Checks if we can use enough cells (in posx, posx+2 rows, from posy-1 to posy+1) for the = sign
+	public boolean checkAvailabilityEquals(int posx, int posy, int rows, int cols){		
+		for(int j = posy-1; j < posy+2; j++){
+			if(j >= cols)
+				return false;
+			if(usable[posx][j] != state.FREE)
+				return false;
+			else
+				usable[posx][j] = state.RESERVED;
+		}
+		if(posx+2 >= rows)
+			return false;
+		for(int j = posy-1; j < posy+2; j++){
+			if(j >= cols)
+				return false;
+			if(usable[posx+2][j] != state.FREE)
+				return false;
+			else
+				usable[posx+2][j] = state.RESERVED;
 		}
 		
 		return true;
 	}	
 	
 	//embed the + sign, centered in posx, posy
-	public void fillPlusSign(int posx, int posy, GridSolution solution, Color color){
+	public void fillPlusSign(GridSolution solution, int posx, int posy, Color color){
 		for(int j = posy-1; j < posy+2; j++){
 				solution.GridColors[posx][j] = color;
+				usable[posx][j] = state.USED;
 		}
 		for(int i = posx-1; i < posx+2; i++){
 				solution.GridColors[i][posy] = color;
+				usable[i][posy] = state.USED;
 		}
 
 	}
+	
+	//embed = sign
+	public boolean fillEqualsSign(GridSolution solution, int posx, int posy, Color tempc){		
+		for(int j = posy-1; j < posy+2; j++){
+			solution.GridColors[posx][j] = tempc;
+			usable[posx][j] = state.USED;
+		}
+		for(int j = posy-1; j < posy+2; j++){
+			solution.GridColors[posx+2][j] = tempc;
+			usable[posx+2][j] = state.USED;
+		}
+		
+		return true;
+	}
+		
 	//embed one number starting on x, y
 	public void fillNumber(GridSolution solution, int posx, int posy, int number, Color color){
 		int cells = 0;
 		for(int i = posx; i < posx+3 && cells < number; i++)
 			for(int j = posy; j < posy+3 && cells < number; j++){
 				solution.GridColors[i][j] = color;
+				usable[i][j] = state.USED;
 				cells++;
 			}
+	}
+	
+	//Free reserved cells (called when one puzzle couldn't complete its embedding)
+	private void freeReserved(int rows, int cols){
+		for(int i = 0; i < rows; i++)
+			for(int j = 0; j < cols; j++)
+				if(usable[i][j] == state.RESERVED)
+					usable[i][j] = state.FREE;
 	}
 	
 }
