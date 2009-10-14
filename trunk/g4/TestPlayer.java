@@ -40,7 +40,7 @@ public class TestPlayer implements Player{
 		}
 		ic = new ICC_ColorSpace(ip);
 		
-		log.debug("colorspace: "+ip.getColorSpaceType());
+		//log.debug("colorspace: "+ip.getColorSpaceType());
 		
 		int rows = grid.rows;
 		int cols = grid.cols;
@@ -57,16 +57,16 @@ public class TestPlayer implements Player{
 		String solutionKey = "The number of columns before the black one follows an arithmetic succession with common difference = 1";
 		GridSolution solution = new GridSolution(rows, cols, 1, solutionKey);
 		
-		int whiteCols = 1;
+    	int whiteCols = 1;
 		int whitePainted = 0;
 		Color tempc;
 		for(int loopc=0;loopc<cols;loopc++)
         {
             for(int loopr=0;loopr<rows;loopr++)
             {
-            	float L = (float)random.nextInt(50) + 50f;
-            	float a = (float)random.nextInt(255) - 128.0f;
-            	float b = (float)random.nextInt(255) - 128.0f;
+            	float[] lab = getLABColor(20,80,random);
+            	float[] rgb = ic.toRGB(lab);
+            	tempc = new Color(rgb[0],rgb[1],rgb[2]);
             	
             	//Check if we can use the cell
         		if(usable[loopr][loopc] == state.FREE){
@@ -74,16 +74,13 @@ public class TestPlayer implements Player{
 	
 	            		// 0 <= L* <= 100
 	            		// -128 <= a*,b* <= 127
-	            		float[] f = { L,a,b };
-	            		float[] rgb = ic.toRGB(f);
-	            		tempc = new Color( rgb[0], rgb[1], rgb[2] );
-	            		for (float fi : rgb) {
-	            			log.debug(fi);
-	            		}
 	                    solution.GridColors[loopr][loopc] = tempc;
 	            	}
 	            	else{
-	            		tempc = new Color(0,0,0);
+//MANUEL WHY CAN'T I MOVE THESE NEXT TO LINES OUT OF THE LOOP SO THE LINE COLOR STAYS CONSISTENT?
+	            		float[] labLines = getLABColor(20,70,random);
+	            		float[] rgbLines = ic.toRGB(labLines);
+	                	tempc = new Color(rgbLines[0],rgbLines[1],rgbLines[2]);
 	            		//We're not marking the cell as USED because it's possible to overlap puzzles with this one
 	                    solution.GridColors[loopr][loopc] = tempc;
 	            	}
@@ -104,12 +101,25 @@ public class TestPlayer implements Player{
 			puzzles++;
 		if(embedMathPuzzle(solution, rows, cols, random, 2, 8))
 			puzzles++;
+		if(embedMathPuzzle(solution, rows, cols, random, 3, 6))
+			puzzles++;
 		
 		solution.setNo_of_puzzles(puzzles);
 		// TODO Auto-generated method stub
 		return solution;
 	}
 	
+	private float[] getLABColor(int i, int j, Random random) {
+		// TODO Auto-generated method stub
+    	float L = (float)random.nextInt(i) + j;
+    	float a = (float)random.nextInt(255) - 128.0f;
+    	float b = (float)random.nextInt(255) - 128.0f;
+//		float[] rgb = ic.toRGB(f);
+		float[] f = { L,a,b };
+
+		return f;
+	}
+
 	/*
 	 * Embed two numbers and mathematical signs to hint the user to add them
 	 * @param solution GridSolution object where we embed the puzzle
@@ -120,15 +130,11 @@ public class TestPlayer implements Player{
 	 */
 	private boolean embedMathPuzzle(GridSolution solution, int rows, int cols, Random random, int first, int second){
 		//Decide color for this puzzle
-		float L = (float)random.nextInt(50);
-		float a = (float)random.nextInt(255) - 128.0f;
-		float b = (float)random.nextInt(255) - 128.0f;
+    	float[] lab = getLABColor(20,50,random);
+    	float[] rgb = ic.toRGB(lab);
 		Color tempc;
-		
-		float[] f = { L,a,b };
-		float[] rgb = ic.toRGB(f);
-		tempc = new Color( rgb[0], rgb[1], rgb[2] );
-		
+		tempc = new Color(rgb[0],rgb[1],rgb[2]);
+				
 		int posx, posy, posx2, posy2, posx3, posy3, posx4, posy4, tries;
 		
 		//Find a place for the first number
