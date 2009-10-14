@@ -61,12 +61,12 @@ public class TestPlayer implements Player{
 		Color tempc;
 		for(int loopc=0;loopc<cols;loopc++)
         {
-    		float L = (float)random.nextInt(50) + 50f;
-    		float a = (float)random.nextInt(255) - 128.0f;
-    		float b = (float)random.nextInt(255) - 128.0f;
-    		
             for(int loopr=0;loopr<rows;loopr++)
             {
+            	float L = (float)random.nextInt(50) + 50f;
+            	float a = (float)random.nextInt(255) - 128.0f;
+            	float b = (float)random.nextInt(255) - 128.0f;
+            	
             	//Check if we can use the cell
         		if(usable[loopr][loopc] == state.FREE){
 	            	if(whitePainted < whiteCols){
