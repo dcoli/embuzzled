@@ -29,12 +29,13 @@ public class TestPlayer implements Player{
 		log = new Logger(LogLevel.DEBUG,this.getClass());
 		
 //		float[] f = new float[3]; //{ 50f, 30f, 40f };
-		long seed = 13;
+		long seed = 14;
 		Random random = new Random(seed);
 		
 		int i=0;
 		try {
-			ip = ICC_Profile.getInstance("embuzzled/g4/lab.icm");
+			//ip = ICC_Profile.getInstance("embuzzled/g4/lab.icm");
+			ip = ICC_Profile.getInstance("embuzzled/g4/AppleRGB.icc");
 		} catch(IOException e) {
 			log.debug("index "+(i++) + ": " + e.toString());
 		}
@@ -57,16 +58,25 @@ public class TestPlayer implements Player{
 		String solutionKey = "The number of columns before the black one follows an arithmetic succession with common difference = 1";
 		GridSolution solution = new GridSolution(rows, cols, 1, solutionKey);
 		
+//		float[] labLines = getLABColor(20,70,random);
+//		float[] rgbLines = ic.toRGB(labLines);
+
+		float[] rgbLines = getRGB( random );
+    	
+		//the below can be used to determine if bordering colors differ enough in lab quantities.
+    	float[] labLines = rgbToLab( rgbLines );
+
     	int whiteCols = 1;
 		int whitePainted = 0;
 		Color tempc;
 		for(int loopc=0;loopc<cols;loopc++)
         {
-            for(int loopr=0;loopr<rows;loopr++)
+        	float[] lab = getLABColor( 100,0,random );
+        	float[] rgb = getRGB( random );//ic.toRGB(lab);        	
+        	tempc = new Color(rgb[0],rgb[1],rgb[2]);
+
+        	for(int loopr=0;loopr<rows;loopr++)
             {
-            	float[] lab = getLABColor(20,80,random);
-            	float[] rgb = ic.toRGB(lab);
-            	tempc = new Color(rgb[0],rgb[1],rgb[2]);
             	
             	//Check if we can use the cell
         		if(usable[loopr][loopc] == state.FREE){
@@ -77,9 +87,6 @@ public class TestPlayer implements Player{
 	                    solution.GridColors[loopr][loopc] = tempc;
 	            	}
 	            	else{
-//MANUEL WHY CAN'T I MOVE THESE NEXT TO LINES OUT OF THE LOOP SO THE LINE COLOR STAYS CONSISTENT?
-	            		float[] labLines = getLABColor(20,70,random);
-	            		float[] rgbLines = ic.toRGB(labLines);
 	                	tempc = new Color(rgbLines[0],rgbLines[1],rgbLines[2]);
 	            		//We're not marking the cell as USED because it's possible to overlap puzzles with this one
 	                    solution.GridColors[loopr][loopc] = tempc;
@@ -105,12 +112,52 @@ public class TestPlayer implements Player{
 			puzzles++;
 		
 		solution.setNo_of_puzzles(puzzles);
-		// TODO Auto-generated method stub
 		return solution;
 	}
 	
-	private float[] getLABColor(int i, int j, Random random) {
+	private float[] rgbToLab(float[] rgbLines) {
 		// TODO Auto-generated method stub
+//		var_R = ( R / 255 )        //R from 0 to 255
+//		var_G = ( G / 255 )        //G from 0 to 255
+//		var_B = ( B / 255 )        //B from 0 to 255
+		
+		float var_R = rgbLines[0];
+		float var_G = rgbLines[1];
+		float var_B = rgbLines[2];
+
+		if ( var_R > 0.04045 ) var_R = (float) java.lang.Math.pow( ( ( var_R + 0.055 ) / 1.055 ), 2.4 );
+		else                   var_R = var_R / 12.92f;
+		if ( var_G > 0.04045 ) var_G = (float) java.lang.Math.pow( ( ( var_G + 0.055 ) / 1.055 ) , 2.4 );
+		else                   var_G = var_G / 12.92f;
+		if ( var_B > 0.04045 ) var_B = (float) java.lang.Math.pow( ( ( var_B + 0.055 ) / 1.055 ) , 2.4 );
+		else                   var_B = var_B / 12.92f;
+
+		var_R = var_R * 100;
+		var_G = var_G * 100;
+		var_B = var_B * 100;
+
+		//Observer. = 2¡, Illuminant = D65
+		float X = var_R * 0.4124f + var_G * 0.3576f + var_B * 0.1805f;
+		float Y = var_R * 0.2126f + var_G * 0.7152f + var_B * 0.0722f;
+		float Z = var_R * 0.0193f + var_G * 0.1192f + var_B * 0.9505f;
+		
+		float L = (float) (10 * java.lang.Math.pow( Y,0.5f ));
+		float a = (float) (17.5 * ( ( ( 1.02 * X ) - Y ) / java.lang.Math.pow( Y,.5f ) ));
+		float b = (float) (7 * ( ( Y - ( 0.847 * Z ) ) / java.lang.Math.pow( Y,.5f ) ));
+		float[] f = { L,a,b }; 
+		return f;
+	}
+
+	private float[] getRGB(Random random) {
+		float[] rgb = { 0,0,0 };
+    	rgb[0] = random.nextFloat() * .3f + .6f;
+    	rgb[1] = random.nextFloat() * .3f + .6f;
+    	rgb[2] = random.nextFloat() * .3f + .6f;
+    	log.debug(rgb[0]+','+rgb[1]+','+rgb[2]);
+		return rgb;
+	}
+
+	private float[] getLABColor(int i, int j, Random random) {
     	float L = (float)random.nextInt(i) + j;
     	float a = (float)random.nextInt(255) - 128.0f;
     	float b = (float)random.nextInt(255) - 128.0f;
@@ -130,8 +177,11 @@ public class TestPlayer implements Player{
 	 */
 	private boolean embedMathPuzzle(GridSolution solution, int rows, int cols, Random random, int first, int second){
 		//Decide color for this puzzle
-    	float[] lab = getLABColor(20,50,random);
-    	float[] rgb = ic.toRGB(lab);
+		rows -= 1;
+		cols -= 1;
+    	float[] lab = getLABColor( 20,50,random );
+    	float[] rgb = getRGB( random );
+    	//float[] rgb = ic.toRGB(lab);
 		Color tempc;
 		tempc = new Color(rgb[0],rgb[1],rgb[2]);
 				
@@ -288,6 +338,7 @@ public class TestPlayer implements Player{
 		int cells = 0;
 		for(int i = posx; i < posx+3 && cells < number; i++)
 			for(int j = posy; j < posy+3 && cells < number; j++){
+				log.debug("i:"+i+" j:"+j+" posx:"+posx+" posy:"+posy+" number:"+number+" tempc:"+color.getRed()+","+color.getGreen()+","+color.getBlue());
 				solution.GridColors[i][j] = color;
 				usable[i][j] = state.USED;
 				cells++;
