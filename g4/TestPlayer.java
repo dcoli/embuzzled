@@ -8,6 +8,7 @@ import java.awt.color.ICC_Profile;
 import java.awt.color.ICC_ColorSpace;
 import java.awt.color.ColorSpace.*;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.Random;
 
 import embuzzled.g4.Logger.LogLevel;
@@ -61,6 +62,15 @@ public class TestPlayer implements Player{
 			{ state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.USED, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE },
 	};
 	
+	private state[][] transposePuzzle ( state[][] puzzle ) {
+		state[][] temp = new state[puzzle[0].length][puzzle.length];
+		for ( int i=0; i<puzzle.length; i++ ) {
+			for ( int j=0; j<puzzle[0].length; j++ ) {
+				temp[j][i] = puzzle[i][j];
+			}
+		}
+		return temp;
+	}
 	
 	@Override
 	public GridSolution move(Grid grid) {
@@ -165,6 +175,7 @@ public class TestPlayer implements Player{
 
 	private boolean embedPuzzle( GridSolution solution, state[][] puzzle, int rows, int cols,
 			Random random) {
+		puzzle = transposePuzzle( puzzle );
 		Point start = foundSpaceForPuzzle( puzzle, rows, cols, random );
 		if ( start.x != -1 ) {
 			float[] rgb = getRGB( random );//ic.toRGB(lab);        	
