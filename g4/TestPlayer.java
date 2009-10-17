@@ -2,6 +2,7 @@
 package embuzzled.g4;
 
 import java.awt.Color;
+import java.awt.Point;
 import java.awt.color.ColorSpace;
 import java.awt.color.ICC_Profile;
 import java.awt.color.ICC_ColorSpace;
@@ -22,6 +23,31 @@ public class TestPlayer implements Player{
 	private ICC_Profile ip;
 	private state[][] usable;
 	private int puzzles;
+
+	private state[][] tieFighter = {
+			{ state.USED, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.USED },
+			{ state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE },
+			{ state.USED, state.FREE, state.FREE, state.FREE, state.USED, state.FREE, state.FREE, state.FREE, state.USED },
+			{ state.FREE, state.FREE, state.FREE, state.USED, state.FREE, state.USED, state.FREE, state.FREE, state.FREE },
+			{ state.USED, state.USED, state.USED, state.FREE, state.USED, state.FREE, state.USED, state.USED, state.USED },
+			{ state.FREE, state.FREE, state.FREE, state.USED, state.FREE, state.USED, state.FREE, state.FREE, state.FREE },
+			{ state.USED, state.FREE, state.FREE, state.FREE, state.USED, state.FREE, state.FREE, state.FREE, state.USED },
+			{ state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE },
+			{ state.USED, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.USED },
+	};
+	
+	private state[][] vaderFighter = {
+			{ state.FREE, state.FREE, state.USED, state.FREE, state.FREE, state.FREE, state.USED, state.FREE, state.FREE },
+			{ state.FREE, state.USED, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.USED, state.FREE },
+			{ state.USED, state.FREE, state.FREE, state.FREE, state.USED, state.FREE, state.FREE, state.FREE, state.USED },
+			{ state.USED, state.FREE, state.FREE, state.USED, state.FREE, state.USED, state.FREE, state.FREE, state.USED },
+			{ state.USED, state.USED, state.USED, state.FREE, state.USED, state.FREE, state.USED, state.USED, state.USED },
+			{ state.USED, state.FREE, state.FREE, state.USED, state.FREE, state.USED, state.FREE, state.FREE, state.USED },
+			{ state.USED, state.FREE, state.FREE, state.FREE, state.USED, state.FREE, state.FREE, state.FREE, state.USED },
+			{ state.FREE, state.USED, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.USED, state.FREE },
+			{ state.FREE, state.FREE, state.USED, state.FREE, state.FREE, state.FREE, state.USED, state.FREE, state.FREE },
+	};
+	
 	
 	@Override
 	public GridSolution move(Grid grid) {
@@ -71,12 +97,12 @@ public class TestPlayer implements Player{
 		Color tempc;
 		for(int loopc=0;loopc<cols;loopc++)
         {
-        	float[] lab = getLABColor( 100,0,random );
-        	float[] rgb = getRGB( random );//ic.toRGB(lab);        	
-        	tempc = new Color(rgb[0],rgb[1],rgb[2]);
 
         	for(int loopr=0;loopr<rows;loopr++)
             {
+        		float[] lab = getLABColor( 100,0,random );
+        		float[] rgb = getRGB( random );//ic.toRGB(lab);        	
+        		tempc = new Color(rgb[0],rgb[1],rgb[2]);
             	
             	//Check if we can use the cell
         		if(usable[loopr][loopc] == state.FREE){
@@ -106,20 +132,72 @@ public class TestPlayer implements Player{
 		//embed two numbers and the + sign
 		if(embedMathPuzzle(solution, rows, cols, random, 5, 7))
 			puzzles++;
-		if(embedMathPuzzle(solution, rows, cols, random, 2, 8))
-			puzzles++;
+//		if(embedMathPuzzle(solution, rows, cols, random, 2, 8))
+//			puzzles++;
 		if(embedMathPuzzle(solution, rows, cols, random, 3, 6))
+			puzzles++;
+
+		if( embedPuzzle( solution, tieFighter, rows, cols, random ))
+			puzzles++;
+		
+		if( embedPuzzle( solution, vaderFighter, rows, cols, random ))
 			puzzles++;
 		
 		solution.setNo_of_puzzles(puzzles);
 		return solution;
 	}
 	
+	private boolean embedPuzzle( GridSolution solution, state[][] puzzle, int rows, int cols,
+			Random random) {
+		Point start = foundSpaceForPuzzle( puzzle, rows, cols, random );
+		if ( start.x != -1 ) {
+			float[] rgb = getRGB( random );//ic.toRGB(lab);        	
+			Color tempc = new Color(rgb[0],rgb[1],rgb[2]);
+			setPuzzle( solution, start, puzzle, tempc );
+		}
+		return false;
+	}
+
+	private void setPuzzle( GridSolution solution, Point start, state[][] puzzle, Color color ) {
+		for ( int i = 0; i < puzzle.length; i++ ) {
+			for ( int j = 0; j < puzzle[0].length; j++ ) {
+				if ( puzzle[i][j] == state.USED ) {
+					solution.GridColors[start.x + i][start.y + j] = color;
+					usable[i][j] = state.USED;
+				}
+			}
+		}
+	}
+
+	private Point foundSpaceForPuzzle(state[][] puzzle, int rows, int cols,
+			Random random) {
+		Point start = new Point();
+		boolean found = false;
+		int tries = 0;
+		while (!found && tries++<50) {
+			start.x = random.nextInt( cols-1 );
+			start.y = random.nextInt( rows-1 );
+			if ( start.x + puzzle.length < cols && start.y + puzzle[0].length < rows ) {
+				found = true;
+				for (int i = 0; i < puzzle.length-1; i++) {
+					for (int j = 0; j < puzzle[0].length-1; j++) {
+						if ( puzzle[i][j] == state.USED ) {
+							if ( usable[start.x + i][start.y + j] == state.USED || usable[start.x + i][start.y + j] == state.BLOCKED || usable[start.x + i][start.y + j] == state.RESERVED ) {
+								found = false;
+							}
+						}
+					}
+				}
+			}
+		}
+		if ( tries == 50 ) {
+			start.x = -1;
+			start.y = -1;
+		} 
+		return start;
+	}
+
 	private float[] rgbToLab(float[] rgbLines) {
-		// TODO Auto-generated method stub
-//		var_R = ( R / 255 )        //R from 0 to 255
-//		var_G = ( G / 255 )        //G from 0 to 255
-//		var_B = ( B / 255 )        //B from 0 to 255
 		
 		float var_R = rgbLines[0];
 		float var_G = rgbLines[1];
@@ -166,7 +244,7 @@ public class TestPlayer implements Player{
 
 		return f;
 	}
-
+	
 	/*
 	 * Embed two numbers and mathematical signs to hint the user to add them
 	 * @param solution GridSolution object where we embed the puzzle
