@@ -28,9 +28,9 @@ public class TestPlayer implements Player{
 			{ state.USED, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.USED },
 			{ state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE },
 			{ state.USED, state.FREE, state.FREE, state.FREE, state.USED, state.FREE, state.FREE, state.FREE, state.USED },
-			{ state.FREE, state.FREE, state.FREE, state.USED, state.FREE, state.USED, state.FREE, state.FREE, state.FREE },
+			{ state.USED, state.FREE, state.FREE, state.USED, state.FREE, state.USED, state.FREE, state.FREE, state.USED },
 			{ state.USED, state.USED, state.USED, state.FREE, state.USED, state.FREE, state.USED, state.USED, state.USED },
-			{ state.FREE, state.FREE, state.FREE, state.USED, state.FREE, state.USED, state.FREE, state.FREE, state.FREE },
+			{ state.USED, state.FREE, state.FREE, state.USED, state.FREE, state.USED, state.FREE, state.FREE, state.USED },
 			{ state.USED, state.FREE, state.FREE, state.FREE, state.USED, state.FREE, state.FREE, state.FREE, state.USED },
 			{ state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE },
 			{ state.USED, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.USED },
@@ -48,6 +48,19 @@ public class TestPlayer implements Player{
 			{ state.FREE, state.FREE, state.USED, state.FREE, state.FREE, state.FREE, state.USED, state.FREE, state.FREE },
 	};
 	
+	private state[][] xWingFighter = {
+			{ state.USED, state.FREE, state.FREE, state.FREE, state.FREE, state.USED, state.FREE, state.FREE, state.FREE, state.FREE, state.USED },
+			{ state.FREE, state.USED, state.USED, state.FREE, state.USED, state.USED, state.USED, state.FREE, state.USED, state.USED, state.FREE },
+			{ state.FREE, state.FREE, state.FREE, state.USED, state.USED, state.FREE, state.USED, state.USED, state.FREE, state.FREE, state.FREE },
+			{ state.FREE, state.FREE, state.FREE, state.USED, state.USED, state.FREE, state.USED, state.USED, state.FREE, state.FREE, state.FREE },
+			{ state.FREE, state.USED, state.USED, state.FREE, state.USED, state.USED, state.USED, state.FREE, state.USED, state.USED, state.FREE },
+			{ state.USED, state.FREE, state.FREE, state.FREE, state.USED, state.USED, state.USED, state.FREE, state.FREE, state.FREE, state.USED },
+			{ state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.USED, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE },
+			{ state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.USED, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE },
+			{ state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.USED, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE },
+			{ state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.USED, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE },
+	};
+	
 	
 	@Override
 	public GridSolution move(Grid grid) {
@@ -55,7 +68,7 @@ public class TestPlayer implements Player{
 		log = new Logger(LogLevel.DEBUG,this.getClass());
 		
 //		float[] f = new float[3]; //{ 50f, 30f, 40f };
-		long seed = 14;
+		long seed = 13;
 		Random random = new Random(seed);
 		
 		int i=0;
@@ -86,12 +99,32 @@ public class TestPlayer implements Player{
 		
 //		float[] labLines = getLABColor(20,70,random);
 //		float[] rgbLines = ic.toRGB(labLines);
-
+		
+		embedArithmeticLines( solution, random, rows, cols );
+		puzzles++;
+		
+		//embed two numbers and the + sign
+		if(embedMathPuzzle(solution, rows, cols, random, 5, 7)) puzzles++;
+		else log.debug("math 1 can't fit");
+		if(embedMathPuzzle(solution, rows, cols, random, 3, 6)) puzzles++;
+		else log.debug("math 2 can't fit");
+//		if(embedMathPuzzle(solution, rows, cols, random, 2, 8)) puzzles++;
+//		else log.debug("math 2 can't fit");
+		if( embedPuzzle( solution, tieFighter, rows, cols, random )) puzzles++;
+		else log.debug("tiefighter can't fit");
+		if( embedPuzzle( solution, vaderFighter, rows, cols, random )) puzzles++;
+		else log.debug("vader can't fit");
+		if( embedPuzzle( solution, xWingFighter, rows, cols, random )) puzzles++;
+		else log.debug("xWingFighter can't fit");
+		
+		solution.setNo_of_puzzles(puzzles);
+		return solution;
+	}
+	
+	private void embedArithmeticLines( GridSolution solution, Random random, int rows, int cols ) {
 		float[] rgbLines = getRGB( random );
-    	
 		//the below can be used to determine if bordering colors differ enough in lab quantities.
-    	float[] labLines = rgbToLab( rgbLines );
-
+    	//float[] labLines = rgbToLab( rgbLines );
     	int whiteCols = 1;
 		int whitePainted = 0;
 		Color tempc;
@@ -100,8 +133,9 @@ public class TestPlayer implements Player{
 
         	for(int loopr=0;loopr<rows;loopr++)
             {
-        		float[] lab = getLABColor( 100,0,random );
-        		float[] rgb = getRGB( random );//ic.toRGB(lab);        	
+        		//float[] lab = getLABColor( 100,0,random );
+        		float[] rgb = getRGB( random );//ic.toRGB(lab);
+        		//float[] labLines = rgbToLab( rgbLines );
         		tempc = new Color(rgb[0],rgb[1],rgb[2]);
             	
             	//Check if we can use the cell
@@ -127,26 +161,8 @@ public class TestPlayer implements Player{
             }
 
         }
-		puzzles++;
-		
-		//embed two numbers and the + sign
-		if(embedMathPuzzle(solution, rows, cols, random, 5, 7))
-			puzzles++;
-//		if(embedMathPuzzle(solution, rows, cols, random, 2, 8))
-//			puzzles++;
-		if(embedMathPuzzle(solution, rows, cols, random, 3, 6))
-			puzzles++;
-
-		if( embedPuzzle( solution, tieFighter, rows, cols, random ))
-			puzzles++;
-		
-		if( embedPuzzle( solution, vaderFighter, rows, cols, random ))
-			puzzles++;
-		
-		solution.setNo_of_puzzles(puzzles);
-		return solution;
 	}
-	
+
 	private boolean embedPuzzle( GridSolution solution, state[][] puzzle, int rows, int cols,
 			Random random) {
 		Point start = foundSpaceForPuzzle( puzzle, rows, cols, random );
@@ -154,6 +170,7 @@ public class TestPlayer implements Player{
 			float[] rgb = getRGB( random );//ic.toRGB(lab);        	
 			Color tempc = new Color(rgb[0],rgb[1],rgb[2]);
 			setPuzzle( solution, start, puzzle, tempc );
+			return true;
 		}
 		return false;
 	}
@@ -162,8 +179,8 @@ public class TestPlayer implements Player{
 		for ( int i = 0; i < puzzle.length; i++ ) {
 			for ( int j = 0; j < puzzle[0].length; j++ ) {
 				if ( puzzle[i][j] == state.USED ) {
-					solution.GridColors[start.x + i][start.y + j] = color;
-					usable[i][j] = state.USED;
+					solution.GridColors[start.y + j][start.x + i] = color;
+					usable[j][i] = state.USED;
 				}
 			}
 		}
@@ -174,15 +191,17 @@ public class TestPlayer implements Player{
 		Point start = new Point();
 		boolean found = false;
 		int tries = 0;
-		while (!found && tries++<50) {
+		while (!found && tries++<200) {
 			start.x = random.nextInt( cols-1 );
 			start.y = random.nextInt( rows-1 );
-			if ( start.x + puzzle.length < cols && start.y + puzzle[0].length < rows ) {
+			if ( start.x + puzzle.length < cols-1 && start.y + puzzle[0].length < rows-1 ) {
 				found = true;
-				for (int i = 0; i < puzzle.length-1; i++) {
-					for (int j = 0; j < puzzle[0].length-1; j++) {
+				for (int i = 0; i < puzzle.length; i++) {
+					for (int j = 0; j < puzzle[0].length; j++) {
 						if ( puzzle[i][j] == state.USED ) {
-							if ( usable[start.x + i][start.y + j] == state.USED || usable[start.x + i][start.y + j] == state.BLOCKED || usable[start.x + i][start.y + j] == state.RESERVED ) {
+							if ( usable[start.y + j][start.x + i] == state.USED 
+									|| usable[start.y + j][start.x + i] == state.BLOCKED 
+									|| usable[start.y + j][start.x + i] == state.RESERVED ) {
 								found = false;
 							}
 						}
@@ -231,7 +250,7 @@ public class TestPlayer implements Player{
     	rgb[0] = random.nextFloat() * .3f + .6f;
     	rgb[1] = random.nextFloat() * .3f + .6f;
     	rgb[2] = random.nextFloat() * .3f + .6f;
-    	log.debug(rgb[0]+','+rgb[1]+','+rgb[2]);
+    	//log.debug(rgb[0]+','+rgb[1]+','+rgb[2]);
 		return rgb;
 	}
 
@@ -416,7 +435,7 @@ public class TestPlayer implements Player{
 		int cells = 0;
 		for(int i = posx; i < posx+3 && cells < number; i++)
 			for(int j = posy; j < posy+3 && cells < number; j++){
-				log.debug("i:"+i+" j:"+j+" posx:"+posx+" posy:"+posy+" number:"+number+" tempc:"+color.getRed()+","+color.getGreen()+","+color.getBlue());
+				//log.debug("i:"+i+" j:"+j+" posx:"+posx+" posy:"+posy+" number:"+number+" tempc:"+color.getRed()+","+color.getGreen()+","+color.getBlue());
 				solution.GridColors[i][j] = color;
 				usable[i][j] = state.USED;
 				cells++;
