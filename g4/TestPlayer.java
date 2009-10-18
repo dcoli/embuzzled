@@ -219,14 +219,14 @@ public class TestPlayer implements Player{
                                         for ( int i = leftSide; i <= rightSide; i++ ) {
                                                 for ( int j = topSide; j <= bottomSide; j++ ) {
                                                         if ( usable[i][j] == state.FREE) {
-                                                                Color testColor = solution.GridColors[j][i];
+                                                                Color testColor = solution.GridColors[i][j];
 //                                                              log.debug("position:"+i+","+j);
 //                                                              log.debug( "testColor blue value: "+testColor.getBlue() );
                                                                 while ( colorsAreSimilar( testColor, tempc ) ) {
                                                                         float[] rgb = getRGB( random );
                                                                         testColor = new Color( rgb[0], rgb[1], rgb[2] );
                                                                 }
-                                                                solution.GridColors[j][i] = testColor;
+                                                                solution.GridColors[i][j] = testColor;
                                                         }
                                                 }
                                         }
