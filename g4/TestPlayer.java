@@ -181,9 +181,75 @@ public class TestPlayer implements Player{
 			float[] rgb = getRGB( random );//ic.toRGB(lab);        	
 			Color tempc = new Color(rgb[0],rgb[1],rgb[2]);
 			setPuzzle( solution, start, puzzle, tempc );
+			//fixColors( solution, start, puzzle, tempc, rows, cols, random );
 			return true;
 		}
 		return false;
+	}
+
+	private void fixColors(GridSolution solution, Point start,
+			state[][] puzzle, Color tempc, int rows, int cols, Random random) {
+		// TODO Auto-generated method stub
+		int leftSide, topSide, rightSide, bottomSide;
+		for ( int g = 0; g < puzzle.length; g++ ) {
+			for ( int h = 0; h < puzzle[0].length; h++ ) {
+				if ( puzzle[g][h] == state.USED ) {
+				//if ( g == 0 ) {
+					if ( start.x == 0 ) {
+						leftSide = g;
+					} else {
+						leftSide = start.x + g - 1;
+					}
+				//} else leftSide = start.x - 1;
+				//if ( h == 0 ) {
+					if ( start.y == 0 ) {
+						topSide = h;
+					} else {
+						topSide = start.y + h - 1;
+					}
+				//} else topSide = start.y + h - 1;
+					if ( start.x + puzzle.length < cols - 1 ) rightSide = start.x + puzzle.length + 1;
+					else rightSide = start.x + puzzle.length;
+					if ( start.y + puzzle[0].length < rows - 1 ) bottomSide = start.y + puzzle[0].length + 1;
+					else bottomSide = start.y + puzzle[0].length;
+					// the "sides" have all been adjusted to absolute coordinates within the solution
+					for ( int i = leftSide; i <= rightSide; i++ ) {
+						for ( int j = topSide; j <= bottomSide; j++ ) {
+							if ( usable[j][i] != state.USED || usable[j][i] != state.BLOCKED || usable[j][i] != state.RESERVED ) {
+								Color testColor = solution.GridColors[j][i];
+//								log.debug("position:"+i+","+j);
+//								log.debug( "testColor blue value: "+testColor.getBlue() );
+								while ( colorsAreSimilar( testColor, tempc ) ) {
+									float[] rgb = getRGB( random );
+									testColor = new Color( rgb[0], rgb[1], rgb[2] );
+								}
+								solution.GridColors[j][i] = testColor;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	private boolean colorsAreSimilar(Color testColor, Color puzzleColor) {
+		// TODO Auto-generated method stub
+		log.debug( "testColor blue value: "+testColor.getBlue() );
+		float[] testf = {
+				testColor.getRed() / 255,
+				testColor.getGreen() / 255,
+				testColor.getBlue() / 255
+		};
+		float[] puzzlef = {
+				puzzleColor.getRed() / 255,
+				puzzleColor.getGreen() / 255,
+				puzzleColor.getBlue() / 255
+		};
+		float[] testLAB = rgbToLab(testf);
+		float[] puzzleLAB = rgbToLab(puzzlef);
+		return Math.abs( testLAB[0] - puzzleLAB[0] ) < 10 
+			&& Math.abs( testLAB[1] - puzzleLAB[1] ) < 20 
+			&& Math.abs( testLAB[2] - puzzleLAB[2] ) < 20;
 	}
 
 	private void setPuzzle( GridSolution solution, Point start, state[][] puzzle, Color color ) {
