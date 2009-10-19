@@ -255,8 +255,8 @@ public class TestPlayer implements Player{
                 log.debug("Math.abs( testLAB[1] - puzzleLAB[1] ) "+Math.abs( testLAB[1] - puzzleLAB[1] ) );
                 log.debug("Math.abs( testLAB[2] - puzzleLAB[2] ) "+Math.abs( testLAB[2] - puzzleLAB[2] ) );
                 return Math.abs( testLAB[0] - puzzleLAB[0] ) < 30 
-                        && Math.abs( testLAB[1] - puzzleLAB[1] ) < 30 
-                        && Math.abs( testLAB[2] - puzzleLAB[2] ) < 30;
+                        && Math.abs( testLAB[1] - puzzleLAB[1] ) < 20 
+                        && Math.abs( testLAB[2] - puzzleLAB[2] ) < 20;
         }
 
         private void setPuzzle( GridSolution solution, Point start, state[][] puzzle, Color color ) {
