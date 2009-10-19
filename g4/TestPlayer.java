@@ -235,22 +235,28 @@ public class TestPlayer implements Player{
         }
 
         private boolean colorsAreSimilar(Color testColor, Color puzzleColor) {
-                log.debug( "testColor blue value: "+testColor.getBlue() );
+                //log.debug( "testColor blue value: "+testColor.getBlue() );
                 float[] testf = {
-                                testColor.getRed() / 255,
-                                testColor.getGreen() / 255,
-                                testColor.getBlue() / 255
+		                (float)testColor.getRed() / 255.0f,
+		                (float)testColor.getGreen() / 255.0f,
+		                (float)testColor.getBlue() / 255.0f
                 };
+                log.debug("testf "+testf[0]+","+testf[1]+","+testf[2]);
                 float[] puzzlef = {
-                                puzzleColor.getRed() / 255,
-                                puzzleColor.getGreen() / 255,
-                                puzzleColor.getBlue() / 255
+                		(float)puzzleColor.getRed() / 255.0f,
+                		(float)puzzleColor.getGreen() / 255.0f,
+                		(float)puzzleColor.getBlue() / 255.0f
                 };
+                log.debug("puzzlef "+puzzlef[0]+","+puzzlef[1]+","+puzzlef[2]);
                 float[] testLAB = rgbToLab(testf);
                 float[] puzzleLAB = rgbToLab(puzzlef);
-                return Math.abs( testLAB[0] - puzzleLAB[0] ) < 10 
-                        && Math.abs( testLAB[1] - puzzleLAB[1] ) < 20 
-                        && Math.abs( testLAB[2] - puzzleLAB[2] ) < 20;
+                log.debug("testLAB[0] "+testLAB[0]);
+                log.debug("Math.abs( testLAB[0] - puzzleLAB[0] ) "+Math.abs( testLAB[0] - puzzleLAB[0] ) );
+                log.debug("Math.abs( testLAB[1] - puzzleLAB[1] ) "+Math.abs( testLAB[1] - puzzleLAB[1] ) );
+                log.debug("Math.abs( testLAB[2] - puzzleLAB[2] ) "+Math.abs( testLAB[2] - puzzleLAB[2] ) );
+                return Math.abs( testLAB[0] - puzzleLAB[0] ) < 30 
+                        && Math.abs( testLAB[1] - puzzleLAB[1] ) < 30 
+                        && Math.abs( testLAB[2] - puzzleLAB[2] ) < 30;
         }
 
         private void setPuzzle( GridSolution solution, Point start, state[][] puzzle, Color color ) {
