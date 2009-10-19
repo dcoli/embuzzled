@@ -188,7 +188,6 @@ public class TestPlayer implements Player{
 
         private void fixColors(GridSolution solution, Point start,
                         state[][] puzzle, Color tempc, int rows, int cols, Random random) {
-                // TODO Auto-generated method stub
                 int leftSide, topSide, rightSide, bottomSide;
                 for ( int g = 0; g < puzzle.length; g++ ) {
                         for ( int h = 0; h < puzzle[0].length; h++ ) {
@@ -236,7 +235,6 @@ public class TestPlayer implements Player{
         }
 
         private boolean colorsAreSimilar(Color testColor, Color puzzleColor) {
-                // TODO Auto-generated method stub
                 log.debug( "testColor blue value: "+testColor.getBlue() );
                 float[] testf = {
                                 testColor.getRed() / 255,
@@ -323,9 +321,9 @@ public class TestPlayer implements Player{
 
         private float[] getRGB(Random random) {
                 float[] rgb = { 0,0,0 };
-        rgb[0] = random.nextFloat() * .3f + .6f;
-        rgb[1] = random.nextFloat() * .3f + .6f;
-        rgb[2] = random.nextFloat() * .3f + .6f;
+        rgb[0] = random.nextFloat() * .3f + .5f;
+        rgb[1] = random.nextFloat() * .3f + .5f;
+        rgb[2] = random.nextFloat() * .3f + .5f;
         //log.debug(rgb[0]+','+rgb[1]+','+rgb[2]);
                 return rgb;
         }
@@ -350,13 +348,14 @@ public class TestPlayer implements Player{
          */
         private boolean embedMathPuzzle(GridSolution solution, int rows, int cols, Random random, int first, int second){
                 //Decide color for this puzzle
-                float L = (float)random.nextInt(20)+30;
-                float a = (float)random.nextInt(255) - 128.0f;
-                float b = (float)random.nextInt(255) - 128.0f;
+//                float L = (float)random.nextInt(20)+30;
+//                float a = (float)random.nextInt(255) - 128.0f;
+//                float b = (float)random.nextInt(255) - 128.0f;
                 Color tempc;
-                
-                float[] f = { L,a,b };
-                float[] rgb = ic.toRGB(f);
+//                
+//                float[] f = { L,a,b };
+//                float[] rgb = ic.toRGB(f);
+        		float[] rgb = getRGB( random );
                 tempc = new Color( rgb[0], rgb[1], rgb[2] );
                 
                 int posx, posy, posx2, posy2, posx3, posy3, posx4, posy4, tries;
