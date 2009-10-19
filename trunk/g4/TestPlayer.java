@@ -60,7 +60,19 @@ public class TestPlayer implements Player{
                         { state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.USED, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE },
                         { state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.USED, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE },
         };
+                        
         
+        private state[][] firstNum = getNumber(3);
+        
+        private state[][] secondNum = getNumber(5);
+        
+        private state[][] thirdNum = getNumber(8);
+        
+        private state[][] plusSign = getPlusSign();
+        
+        private state[][] equalsSign = getEqualsSign();
+        
+                
         private state[][] transposePuzzle ( state[][] puzzle ) {
                 state[][] temp = new state[puzzle[0].length][puzzle.length];
                 for ( int i=0; i<puzzle.length; i++ ) {
@@ -70,10 +82,27 @@ public class TestPlayer implements Player{
                 }
                 return temp;
         }
+        //returns an initializer array with free's filled in the same size
+        // as the grid
+        private state[][] GetFreeState(int rows, int cols)
+        {
+        	state[][] temp = new state[rows][cols];
+        	for(int i = 0; i<rows; i++)
+        	{
+        		for(int j = 0; j < cols; j++)
+        		{
+        			temp[i][j] = state.FREE;
+        		}
+        	}
+        	return temp;
+        }
         
         @Override
-        public GridSolution move(Grid grid) {
-                
+        public GridSolution move(Grid grid) 
+        {
+        
+        	state[][] math1Puzzle = GetFreeState(grid.rows, grid.cols);
+
                 log = new Logger(LogLevel.DEBUG,this.getClass());
                 
 //              float[] f = new float[3]; //{ 50f, 30f, 40f };
@@ -112,6 +141,7 @@ public class TestPlayer implements Player{
                 embedArithmeticLines( solution, random, rows, cols );
                 puzzles++;
                 
+                /*
                 //embed two numbers and the + sign
                 if(embedMathPuzzle(solution, rows, cols, random, 5, 7)) puzzles++;
                 else log.debug("math 1 can't fit");
@@ -119,12 +149,19 @@ public class TestPlayer implements Player{
                 else log.debug("math 2 can't fit");
 //              if(embedMathPuzzle(solution, rows, cols, random, 2, 8)) puzzles++;
 //              else log.debug("math 2 can't fit");
+                */
+
+                if(embedMathPuzzle(solution, firstNum,plusSign,secondNum,equalsSign,thirdNum,rows,cols,random))puzzles++;
+                else log.debug("Math Puzzle Cant Fit");
+
                 if( embedPuzzle( solution, tieFighter, rows, cols, random )) puzzles++;
                 else log.debug("tiefighter can't fit");
                 if( embedPuzzle( solution, vaderFighter, rows, cols, random )) puzzles++;
                 else log.debug("vader can't fit");
                 if( embedPuzzle( solution, xWingFighter, rows, cols, random )) puzzles++;
                 else log.debug("xWingFighter can't fit");
+                
+                
                 
                 solution.setNo_of_puzzles(puzzles);
                 return solution;
@@ -185,6 +222,63 @@ public class TestPlayer implements Player{
                 }
                 return false;
         }
+        
+        private boolean embedMathPuzzle( GridSolution solution, state[][] firstNum, state[][] plusSign,  
+        		state[][] secondNum, state[][] equalsSign, state[][] thirdNum,int rows, int cols,
+                Random random) 
+        {
+        //puzzle = transposePuzzle( puzzle );
+        Point num1Start = foundSpaceForPuzzle(firstNum, rows, cols, random);
+        if ( num1Start.x != -1 )         
+        {
+            float[] rgb = getRGB( random );//ic.toRGB(lab);         
+            Color tempc = new Color(rgb[0],rgb[1],rgb[2]);
+            setPuzzle( solution, num1Start, firstNum, tempc );
+            fixColors( solution, num1Start, firstNum, tempc, rows, cols, random );
+            
+            Point plusStart = foundSpaceForPuzzle(plusSign, rows, cols, random);
+            if(plusStart.x !=-1)
+            {
+        		setPuzzle( solution, plusStart, plusSign, tempc );
+        		fixColors( solution, plusStart, plusSign, tempc, rows, cols, random );
+            
+            	Point num2Start = foundSpaceForPuzzle(secondNum,rows,cols,random);
+            	if(num2Start.x!=-1)
+            	{
+            		setPuzzle( solution, num2Start, secondNum, tempc );
+            		fixColors( solution, num2Start, secondNum, tempc, rows, cols, random );
+            		
+            		Point equalsStart = foundSpaceForPuzzle(equalsSign,rows, cols, random);
+            		if(equalsStart.x!=-1)
+            		{
+                		setPuzzle( solution, equalsStart, equalsSign, tempc );
+                		fixColors( solution, equalsStart, equalsSign, tempc, rows, cols, random );
+                		
+                		Point num3Start = foundSpaceForPuzzle(thirdNum,rows,cols,random);
+                		if(num3Start.x!=-1)
+                		{
+                    		setPuzzle( solution, num3Start, thirdNum, tempc );
+                    		fixColors( solution, num3Start, thirdNum, tempc, rows, cols, random );
+
+                		}
+                		else
+                			return false;
+            		}
+            		else
+            			return false;
+            	}
+            	else
+            		return false;
+            }
+            else
+            	return false;
+        }
+        else
+        	return false;
+       
+        return true;
+        }
+
 
         private void fixColors(GridSolution solution, Point start,
                         state[][] puzzle, Color tempc, int rows, int cols, Random random) {
@@ -524,7 +618,49 @@ public class TestPlayer implements Player{
                         }
         }
         
-        //Free reserved cells (called when one puzzle couldn't complete its embedding)
+        public state[][] getNumber(int number)
+        {
+        	state[][] numState = GetFreeState(3,3);
+            int cells = 0;
+        	for(int i = 0; i < 3 && cells < number; i++)
+                for(int j = 0; j < 3 && cells < number; j++){
+                		numState[i][j] = state.USED;
+                        cells++;
+                }
+        	return numState;
+        }
+        
+        public state[][] getPlusSign()
+        {
+        	state[][] plusState = GetFreeState(3,3);        	
+            int posx = 1;
+        	int posy = 1;
+            for(int j = 0; j < 3; j++){
+                plusState[posx][j] = state.USED;
+            }
+            for(int i = 0; i < 3; i++){
+                plusState[i][posy] = state.USED;
+            }
+            
+            return plusState;
+        }
+        
+       public state[][] getEqualsSign()
+       {
+    	   state[][] equalsState = GetFreeState(3,3);
+    	   int posx = 0;
+    	   int posy = 2;
+    	   
+           for(int j = 0; j < 3; j++){
+               equalsState[posx][j] = state.USED;
+           }
+           for(int j = 0; j < 3; j++){
+               equalsState[posy][j] = state.USED;
+           }
+           
+           return equalsState;
+       }
+       //Free reserved cells (called when one puzzle couldn't complete its embedding)
         private void freeReserved(int rows, int cols){
                 for(int i = 0; i < rows; i++)
                         for(int j = 0; j < cols; j++)
