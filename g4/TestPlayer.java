@@ -275,13 +275,14 @@ public class TestPlayer implements Player{
                 Point start = new Point();
                 boolean found = false;
                 int tries = 0;
-                while (!found && tries++<200) {
+                while (!found && tries<200) {
+                    tries++;
                     start.x = random.nextInt( rows-1 );
                     start.y = random.nextInt( cols-1 );
-                    if ( start.x + puzzle.length < rows-1 && start.y + puzzle[0].length < cols-1 ) {
+                    if ( start.x + puzzle.length < rows && start.y + puzzle[0].length < cols ) {
                         found = true;
-                        for (int i = 0; i < puzzle.length; i++) {
-                            for (int j = 0; j < puzzle[0].length; j++) {
+                        for (int i = 0; i < puzzle.length && found; i++) {
+                            for (int j = 0; j < puzzle[0].length && found; j++) {
                                 if ( puzzle[i][j] == state.USED && usable[start.x + i][start.y + j] != state.FREE) {
                                         found = false;
                                 }
