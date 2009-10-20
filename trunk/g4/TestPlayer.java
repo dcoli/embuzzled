@@ -13,6 +13,10 @@ import java.util.Random;
 import embuzzled.g4.Logger.LogLevel;
 import embuzzled.ui.*;
 
+/******************************************
+ * To change random seed go to line 130
+ *
+ *****************************************/
 
 
 public class TestPlayer implements Player{
@@ -121,7 +125,10 @@ public class TestPlayer implements Player{
                 log = new Logger(LogLevel.WARN,this.getClass());
                 
 //              float[] f = new float[3]; //{ 50f, 30f, 40f };
+                
+        /********************************************************************/
                 long seed = 13;
+        /********************************************************************/
                 Random random = new Random(seed);
                 
                 ReturnValue ret;
