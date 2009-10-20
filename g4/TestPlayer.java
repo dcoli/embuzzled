@@ -23,6 +23,18 @@ public class TestPlayer implements Player{
         private ICC_Profile ip;
         private state[][] usable;
         private int puzzles;
+        
+        private class ReturnValue{
+        	public Point startPoint;
+        	public String shape;
+        	public String sol;
+        	
+        	public void ReturnValue(){
+        		startPoint = new Point(-1, -1);
+        		shape = "";
+        		sol = "";
+        	}
+        }
 
         private state[][] eye = {
                 { state.FREE, state.FREE, state.FREE, state.FREE, state.USED, state.USED, state.USED, state.FREE, state.FREE, state.FREE, state.FREE },
@@ -71,14 +83,17 @@ public class TestPlayer implements Player{
         };
         
         private state[][] xWingFighter = {
-                        { state.USED, state.FREE, state.FREE, state.FREE, state.FREE, state.USED, state.FREE, state.FREE, state.FREE, state.FREE, state.USED },
-                        { state.FREE, state.USED, state.USED, state.FREE, state.USED, state.USED, state.USED, state.FREE, state.USED, state.USED, state.FREE },
-                        { state.FREE, state.FREE, state.FREE, state.USED, state.USED, state.FREE, state.USED, state.USED, state.FREE, state.FREE, state.FREE },
-                        { state.FREE, state.FREE, state.FREE, state.USED, state.USED, state.FREE, state.USED, state.USED, state.FREE, state.FREE, state.FREE },
-                        { state.FREE, state.USED, state.USED, state.FREE, state.USED, state.USED, state.USED, state.FREE, state.USED, state.USED, state.FREE },
-                        { state.USED, state.FREE, state.FREE, state.FREE, state.USED, state.USED, state.USED, state.FREE, state.FREE, state.FREE, state.USED },
-                        { state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.USED, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE },
-        };
+                { state.USED, state.FREE, state.FREE, state.FREE, state.FREE, state.USED, state.FREE, state.FREE, state.FREE, state.FREE, state.USED },
+                { state.FREE, state.USED, state.USED, state.FREE, state.USED, state.USED, state.USED, state.FREE, state.USED, state.USED, state.FREE },
+                { state.FREE, state.FREE, state.FREE, state.USED, state.USED, state.FREE, state.USED, state.USED, state.FREE, state.FREE, state.FREE },
+                { state.FREE, state.FREE, state.FREE, state.USED, state.USED, state.FREE, state.USED, state.USED, state.FREE, state.FREE, state.FREE },
+                { state.FREE, state.USED, state.USED, state.FREE, state.USED, state.USED, state.USED, state.FREE, state.USED, state.USED, state.FREE },
+                { state.USED, state.FREE, state.FREE, state.FREE, state.USED, state.USED, state.USED, state.FREE, state.FREE, state.FREE, state.USED },
+                { state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.USED, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE },
+                { state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.USED, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE },
+                { state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.USED, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE },
+                { state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.USED, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE },
+};
         
         private state[][] sos = {
                 { state.USED, state.FREE, state.USED, state.FREE, state.USED, state.FREE, state.USED, state.USED, state.FREE, state.USED, state.USED,state. FREE, state.USED, state.USED, state.FREE, state.USED, state.FREE, state.USED, state.FREE, state.USED },
@@ -109,6 +124,7 @@ public class TestPlayer implements Player{
                 long seed = 13;
                 Random random = new Random(seed);
                 
+                ReturnValue ret;
                 int i=0;
                 try {
                         //ip = ICC_Profile.getInstance("embuzzled/g4/lab.icm");
@@ -132,8 +148,8 @@ public class TestPlayer implements Player{
                         }
 
                 puzzles = 0;
-                String solutionKey = "The number of columns before the black one follows an arithmetic succession with common difference = 1";
-                GridSolution solution = new GridSolution(rows, cols, 1, solutionKey);
+                String solutionKey = "";
+                GridSolution solution = new GridSolution(rows, cols, 1, "");
                 
 //              float[] labLines = getLABColor(20,70,random);
 //              float[] rgbLines = ic.toRGB(labLines);
@@ -152,27 +168,88 @@ public class TestPlayer implements Player{
                 puzzles++;
                 
                 //embed two numbers and the + sign
-                if(embedMathPuzzle(solution, rows, cols, random, 5, 7)) puzzles++;
-                else log.warn("math 1 can't fit");
-                if(embedMathPuzzle(solution, rows, cols, random, 3, 6)) puzzles++;
-                else log.warn("math 2 can't fit");
-//              if(embedMathPuzzle(solution, rows, cols, random, 2, 8)) puzzles++;
-//              else log.warn("math 2 can't fit");
-                if( embedPuzzle( solution, tieFighter, rows, cols, random )) puzzles++;
-                else log.warn("tiefighter can't fit");
-                if( embedPuzzle( solution, vaderFighter, rows, cols, random )) puzzles++;
-                else log.warn("vader can't fit");
-                if( embedPuzzle( solution, xWingFighter, rows, cols, random )) puzzles++;
-                else log.warn("xWingFighter can't fit");
-                if( embedPuzzle( solution, eye, rows, cols, random )) puzzles++;
-                else log.warn("eye can't fit");
-                if( embedPuzzle( solution, sos, rows, cols, random )) puzzles++;
-                else log.warn("sos can't fit");
-                if( embedPuzzle( solution, fibo, rows, cols, random )) puzzles++;
-                else log.warn("fibo can't fit");
-                if( embedPuzzle( solution, pi, rows, cols, random )) puzzles++;
-                else log.warn("pi can't fit");
+                ret = embedMathPuzzle(solution, rows, cols, random, 5, 7, solutionKey);
+                if(ret != null){ 
+                	puzzles++;
+                	solutionKey += ret.sol;
+                	solutionKey += "\n";
+                }
+                else 
+                	log.warn("math 1 can't fit");
+                ret = embedMathPuzzle(solution, rows, cols, random, 3, 6, solutionKey); 
+                if(ret != null){
+                	puzzles++;
+                	solutionKey += ret.sol;
+                	solutionKey += "\n";
+                }
+                else 
+                	log.warn("math 2 can't fit");
                 
+                ret = embedPuzzle( solution, tieFighter, rows, cols, random );
+                if(ret.startPoint.x != -1){
+                	puzzles++;
+                	solutionKey+="There is a Tie Fighter (from Star Wars) starting in "+ret.startPoint.x+","+ret.startPoint.y+"\n";
+                	solutionKey+= ret.shape;
+                	solutionKey += "\n";
+                }
+                else 
+                	log.warn("tiefighter can't fit");
+                ret = embedPuzzle( solution, vaderFighter, rows, cols, random );
+                if(ret.startPoint.x != -1){
+                	puzzles++;
+                	solutionKey+="There is a Darth Vader Tie Fighter (from Star Wars) starting in "+ret.startPoint.x+","+ret.startPoint.y+"\n";
+                	solutionKey+= ret.shape;
+                	solutionKey += "\n";
+                }
+                else 
+                	log.warn("vaderfighter can't fit");
+                ret = embedPuzzle( solution, xWingFighter, rows, cols, random );
+                if(ret.startPoint.x != -1){
+                	puzzles++;
+                	solutionKey+="There is an X-Wing (from Star Wars) starting in "+ret.startPoint.x+","+ret.startPoint.y+"\n";
+                	solutionKey+= ret.shape;
+                	solutionKey += "\n";
+                }
+                else 
+                	log.warn("xWingfighter can't fit");
+                ret = embedPuzzle( solution, eye, rows, cols, random );
+                if(ret.startPoint.x != -1){
+                	puzzles++;
+                	solutionKey+="There is an eye starting in "+ret.startPoint.x+","+ret.startPoint.y+"\n";
+                	solutionKey+= ret.shape;
+                	solutionKey += "\n";
+                }
+                else 
+                	log.warn("eye can't fit");
+                ret = embedPuzzle( solution, sos, rows, cols, random );
+                if(ret.startPoint.x != -1){
+                	puzzles++;
+                	solutionKey+="There is a SOS code starting in "+ret.startPoint.x+","+ret.startPoint.y+"\n";
+                	solutionKey+= ret.shape;
+                	solutionKey += "\n";
+                }
+                else 
+                	log.warn("sos can't fit");
+                ret = embedPuzzle( solution, fibo, rows, cols, random );
+                if(ret.startPoint.x != -1){
+                	puzzles++;
+                	solutionKey+="There is a Fibonacci sequence starting in "+ret.startPoint.x+","+ret.startPoint.y+"\n";
+                	solutionKey+= ret.shape;
+                	solutionKey += "\n";
+                }
+                else 
+                	log.warn("fibo can't fit");
+                ret = embedPuzzle( solution, pi, rows, cols, random );
+                if(ret.startPoint.x != -1){
+                	puzzles++;
+                	solutionKey+="There is a pi representation starting in "+ret.startPoint.x+","+ret.startPoint.y+"\n";
+                	solutionKey+= ret.shape;
+                	solutionKey += "\n";
+                }
+                else 
+                	log.warn("pi can't fit");
+                
+                solution.setSolutionKey(solutionKey);
                 solution.setNo_of_puzzles(puzzles);
                 return solution;
         }
@@ -219,18 +296,17 @@ public class TestPlayer implements Player{
         }
         }
 
-        private boolean embedPuzzle( GridSolution solution, state[][] puzzle, int rows, int cols,
+        private ReturnValue embedPuzzle( GridSolution solution, state[][] puzzle, int rows, int cols,
                         Random random) {
-                //puzzle = transposePuzzle( puzzle );
-                Point start = foundSpaceForPuzzle( puzzle, rows, cols, random );
-                if ( start.x != -1 ) {
-                        float[] rgb = getRGB( random );//ic.toRGB(lab);         
-                        Color tempc = new Color(rgb[0],rgb[1],rgb[2]);
-                        setPuzzle( solution, start, puzzle, tempc );
-                        fixColors( solution, start, puzzle, tempc, rows, cols, random );
-                        return true;
-                }
-                return false;
+        	ReturnValue ret = new ReturnValue();
+    		ret.startPoint = foundSpaceForPuzzle( puzzle, rows, cols, random );
+            if ( ret.startPoint.x != -1 ) {
+                    float[] rgb = getRGB( random );//ic.toRGB(lab);         
+                    Color tempc = new Color(rgb[0],rgb[1],rgb[2]);
+                    ret.shape = setPuzzle( solution, ret.startPoint, puzzle, tempc );
+                    fixColors( solution, ret.startPoint, puzzle, tempc, rows, cols, random );
+            }
+            return ret;
         }
 
         private void fixColors(GridSolution solution, Point start,
@@ -306,20 +382,21 @@ public class TestPlayer implements Player{
                         && Math.abs( testLAB[2] - puzzleLAB[2] ) < 20;
         }
 
-        private void setPuzzle( GridSolution solution, Point start, state[][] puzzle, Color color ) {
+        private String setPuzzle( GridSolution solution, Point start, state[][] puzzle, Color color ) {
+        	String p = new String();
         	for ( int i = 0; i < puzzle.length; i++ ) {
                         for ( int j = 0; j < puzzle[0].length; j++ ) {
-                			String p = puzzle[i][j]==state.USED? " o ":"   ";
-                			System.out.print(p);
+                			p += puzzle[i][j]==state.USED? " o ":"   ";
                                 if ( puzzle[i][j] == state.USED ) {
                                         solution.GridColors[start.x + i][start.y + j] = color;
                                         //solution.GridColors[start.x + i][start.y + j] = color;
                                         usable[start.x + i][start.y + j] = state.USED;
                                 }
                         }
-                		System.out.println();
+                		p+="\n";
                 }
-        	System.out.println();
+        	p+="\n";
+        	return p;
         }
 
         private Point foundSpaceForPuzzle(state[][] puzzle, int rows, int cols,
@@ -327,7 +404,8 @@ public class TestPlayer implements Player{
                 Point start = new Point();
                 boolean found = false;
                 int tries = 0;
-                while (!found && tries++<200) {
+                while (!found && tries<200) {
+                	tries++;
                     start.x = random.nextInt( rows-1 );
                     start.y = random.nextInt( cols-1 );
                     if ( start.x + puzzle.length < rows-1 && start.y + puzzle[0].length < cols-1 ) {
@@ -404,7 +482,7 @@ public class TestPlayer implements Player{
          * @param random Random number generator used by our Player
          * @return True if the puzzle was embedded. False otherwise.
          */
-        private boolean embedMathPuzzle(GridSolution solution, int rows, int cols, Random random, int first, int second){
+        private ReturnValue embedMathPuzzle(GridSolution solution, int rows, int cols, Random random, int first, int second, String key){
                 //Decide color for this puzzle
 //                float L = (float)random.nextInt(20)+30;
 //                float a = (float)random.nextInt(255) - 128.0f;
@@ -427,7 +505,7 @@ public class TestPlayer implements Player{
                 }while(checkAvailability(posx,posy, first, rows, cols) == false && tries < 50);
                 if(tries == 50){ //There is no space for it, free reserved cells and return false
                         freeReserved(rows, cols);
-                        return false;
+                        return null;
                 }
 
                 //Try to fit the + sign
@@ -439,7 +517,7 @@ public class TestPlayer implements Player{
                 }while(checkAvailabilityPlus(posx2, posy2, rows, cols) == false && tries < 50);
                 if(tries == 50){
                         freeReserved(rows, cols);
-                        return false;
+                        return null;
                 }
 
                 //Try to fit the second number
@@ -451,7 +529,7 @@ public class TestPlayer implements Player{
                 }while(checkAvailability(posx3,posy3, second, rows, cols) == false && tries < 50);
                 if(tries == 50){
                         freeReserved(rows, cols);
-                        return false;
+                        return null;
                 }
                 
                 //Try to fit the = sign
@@ -463,15 +541,22 @@ public class TestPlayer implements Player{
                 }while(checkAvailabilityEquals(posx4, posy4, rows, cols) == false && tries < 50);
                 if(tries == 50){
                         freeReserved(rows, cols);
-                        return false;
+                        return null;
                 }
                 
+                ReturnValue ret = new ReturnValue();
                 //Embed all parts of the puzzle
                 fillNumber(solution, posx, posy, first, tempc);
                 fillPlusSign(solution, posx2, posy2, tempc);            
                 fillNumber(solution, posx3, posy3, second, tempc);
                 fillEqualsSign(solution, posx4, posy4, tempc);
-                return true;
+                ret.sol = "";
+                ret.sol+=("There is a mathematic puzzle with:\n");
+                ret.sol+=("Two numbers in "+posx+","+posy+" and "+posx3+","+posy3+"\n");
+                ret.sol+=("One + sign in "+posx2+","+posy2+"\n");
+                ret.sol+=("And one = sign in "+posx4+","+posy4+"\n");
+                ret.sol+=("The solution is "+(first+second)+" (after adding the number of blocks in each number)\n");
+                return ret;
         }
         
         //Checks if we can use enough cells starting on posx, posy for a number
