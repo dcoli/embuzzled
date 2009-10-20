@@ -94,10 +94,7 @@ public class TestPlayer implements Player{
                 { state.FREE, state.USED, state.USED, state.FREE, state.USED, state.USED, state.USED, state.FREE, state.USED, state.USED, state.FREE },
                 { state.USED, state.FREE, state.FREE, state.FREE, state.USED, state.USED, state.USED, state.FREE, state.FREE, state.FREE, state.USED },
                 { state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.USED, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE },
-                { state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.USED, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE },
-                { state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.USED, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE },
-                { state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.USED, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE },
-};
+        };
         
         private state[][] sos = {
                 { state.USED, state.FREE, state.USED, state.FREE, state.USED, state.FREE, state.USED, state.USED, state.FREE, state.USED, state.USED,state. FREE, state.USED, state.USED, state.FREE, state.USED, state.FREE, state.USED, state.FREE, state.USED },
@@ -125,10 +122,7 @@ public class TestPlayer implements Player{
                 log = new Logger(LogLevel.WARN,this.getClass());
                 
 //              float[] f = new float[3]; //{ 50f, 30f, 40f };
-                
-        /********************************************************************/
-                long seed = 13;
-        /********************************************************************/
+                long seed = 16;
                 Random random = new Random(seed);
                 
                 ReturnValue ret;
@@ -464,9 +458,9 @@ public class TestPlayer implements Player{
 
         private float[] getRGB(Random random) {
                 float[] rgb = { 0,0,0 };
-        rgb[0] = random.nextFloat() * .5f + .45f;
-        rgb[1] = random.nextFloat() * .5f + .45f;
-        rgb[2] = random.nextFloat() * .5f + .45f;
+        rgb[0] = random.nextFloat() * .6f + .35f;
+        rgb[1] = random.nextFloat() * .6f + .35f;
+        rgb[2] = random.nextFloat() * .6f + .35f;
         //log.debug(rgb[0]+','+rgb[1]+','+rgb[2]);
                 return rgb;
         }
