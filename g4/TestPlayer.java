@@ -94,6 +94,9 @@ public class TestPlayer implements Player{
                 { state.FREE, state.USED, state.USED, state.FREE, state.USED, state.USED, state.USED, state.FREE, state.USED, state.USED, state.FREE },
                 { state.USED, state.FREE, state.FREE, state.FREE, state.USED, state.USED, state.USED, state.FREE, state.FREE, state.FREE, state.USED },
                 { state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.USED, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE },
+                { state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.USED, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE },
+                { state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.USED, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE },
+                { state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.USED, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE },
         };
         
         private state[][] sos = {
@@ -122,7 +125,10 @@ public class TestPlayer implements Player{
                 log = new Logger(LogLevel.WARN,this.getClass());
                 
 //              float[] f = new float[3]; //{ 50f, 30f, 40f };
+               
+                /*************************************/
                 long seed = 16;
+                /*************************************/
                 Random random = new Random(seed);
                 
                 ReturnValue ret;
@@ -164,9 +170,10 @@ public class TestPlayer implements Player{
                 	}
                 }
                 
-                
+                solutionKey+="Coordinates are expressed in (rows,columns) format, starting from the upper-left corner\n\n";
                 embedArithmeticLines( solution, random, rows, cols );
                 puzzles++;
+                solutionKey+="- There are vertical columns of the same color following an arithmetic progression, from left to right\n\n";
                 
                 //embed two numbers and the + sign
                 ret = embedMathPuzzle(solution, rows, cols, random, 5, 7, solutionKey);
@@ -189,7 +196,7 @@ public class TestPlayer implements Player{
                 ret = embedPuzzle( solution, tieFighter, rows, cols, random );
                 if(ret.startPoint.x != -1){
                 	puzzles++;
-                	solutionKey+="There is a Tie Fighter (from Star Wars) starting in "+ret.startPoint.x+","+ret.startPoint.y+"\n";
+                	solutionKey+="- There is a Tie Fighter (from Star Wars) starting in "+ret.startPoint.x+","+ret.startPoint.y+"\n";
                 	solutionKey+= ret.shape;
                 	solutionKey += "\n";
                 }
@@ -198,7 +205,7 @@ public class TestPlayer implements Player{
                 ret = embedPuzzle( solution, vaderFighter, rows, cols, random );
                 if(ret.startPoint.x != -1){
                 	puzzles++;
-                	solutionKey+="There is a Darth Vader Tie Fighter (from Star Wars) starting in "+ret.startPoint.x+","+ret.startPoint.y+"\n";
+                	solutionKey+="- There is a Darth Vader Tie Fighter (from Star Wars) starting in "+ret.startPoint.x+","+ret.startPoint.y+"\n";
                 	solutionKey+= ret.shape;
                 	solutionKey += "\n";
                 }
@@ -207,7 +214,7 @@ public class TestPlayer implements Player{
                 ret = embedPuzzle( solution, xWingFighter, rows, cols, random );
                 if(ret.startPoint.x != -1){
                 	puzzles++;
-                	solutionKey+="There is an X-Wing (from Star Wars) starting in "+ret.startPoint.x+","+ret.startPoint.y+"\n";
+                	solutionKey+="- There is an X-Wing (from Star Wars) starting in "+ret.startPoint.x+","+ret.startPoint.y+"\n";
                 	solutionKey+= ret.shape;
                 	solutionKey += "\n";
                 }
@@ -216,7 +223,7 @@ public class TestPlayer implements Player{
                 ret = embedPuzzle( solution, eye, rows, cols, random );
                 if(ret.startPoint.x != -1){
                 	puzzles++;
-                	solutionKey+="There is an eye starting in "+ret.startPoint.x+","+ret.startPoint.y+"\n";
+                	solutionKey+="- There is an eye starting in "+ret.startPoint.x+","+ret.startPoint.y+"\n";
                 	solutionKey+= ret.shape;
                 	solutionKey += "\n";
                 }
@@ -225,7 +232,7 @@ public class TestPlayer implements Player{
                 ret = embedPuzzle( solution, sos, rows, cols, random );
                 if(ret.startPoint.x != -1){
                 	puzzles++;
-                	solutionKey+="There is a SOS code starting in "+ret.startPoint.x+","+ret.startPoint.y+"\n";
+                	solutionKey+="- There is a SOS code starting in "+ret.startPoint.x+","+ret.startPoint.y+"\n";
                 	solutionKey+= ret.shape;
                 	solutionKey += "\n";
                 }
@@ -234,7 +241,7 @@ public class TestPlayer implements Player{
                 ret = embedPuzzle( solution, fibo, rows, cols, random );
                 if(ret.startPoint.x != -1){
                 	puzzles++;
-                	solutionKey+="There is a Fibonacci sequence starting in "+ret.startPoint.x+","+ret.startPoint.y+"\n";
+                	solutionKey+="- There is a Fibonacci sequence starting in "+ret.startPoint.x+","+ret.startPoint.y+"\n";
                 	solutionKey+= ret.shape;
                 	solutionKey += "\n";
                 }
@@ -243,12 +250,13 @@ public class TestPlayer implements Player{
                 ret = embedPuzzle( solution, pi, rows, cols, random );
                 if(ret.startPoint.x != -1){
                 	puzzles++;
-                	solutionKey+="There is a pi representation starting in "+ret.startPoint.x+","+ret.startPoint.y+"\n";
+                	solutionKey+="- There is a pi representation starting in "+ret.startPoint.x+","+ret.startPoint.y+"\n";
                 	solutionKey+= ret.shape;
                 	solutionKey += "\n";
                 }
                 else 
                 	log.warn("pi can't fit");
+                
                 
                 solution.setSolutionKey(solutionKey);
                 solution.setNo_of_puzzles(puzzles);
@@ -552,7 +560,7 @@ public class TestPlayer implements Player{
                 fillNumber(solution, posx3, posy3, second, tempc);
                 fillEqualsSign(solution, posx4, posy4, tempc);
                 ret.sol = "";
-                ret.sol+=("There is a mathematic puzzle with:\n");
+                ret.sol+=("- There is a mathematic puzzle with:\n");
                 ret.sol+=("Two numbers in "+posx+","+posy+" and "+posx3+","+posy3+"\n");
                 ret.sol+=("One + sign in "+posx2+","+posy2+"\n");
                 ret.sol+=("And one = sign in "+posx4+","+posy4+"\n");
