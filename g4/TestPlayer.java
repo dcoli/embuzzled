@@ -46,6 +46,18 @@ public class TestPlayer implements Player{
                         { state.USED, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.USED },
         };
         
+        private state[][] pi = {
+                { state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.USED, },
+                { state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.USED, },
+                { state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.USED, },
+                { state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.USED, },
+                { state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.USED, state.USED, },
+                { state.FREE, state.FREE, state.FREE, state.USED, state.FREE, state.USED, state.USED, },
+                { state.USED, state.FREE, state.FREE, state.USED, state.FREE, state.USED, state.USED, },
+                { state.USED, state.FREE, state.FREE, state.USED, state.FREE, state.USED, state.USED, },
+                { state.USED, state.FREE, state.USED, state.USED, state.USED, state.USED, state.USED, },
+        };
+
         private state[][] vaderFighter = {
                         { state.FREE, state.FREE, state.USED, state.FREE, state.FREE, state.FREE, state.USED, state.FREE, state.FREE },
                         { state.FREE, state.USED, state.FREE, state.FREE, state.FREE, state.FREE, state.FREE, state.USED, state.FREE },
@@ -91,7 +103,7 @@ public class TestPlayer implements Player{
         @Override
         public GridSolution move(Grid grid) {
                 
-                log = new Logger(LogLevel.DEBUG,this.getClass());
+                log = new Logger(LogLevel.WARN,this.getClass());
                 
 //              float[] f = new float[3]; //{ 50f, 30f, 40f };
                 long seed = 13;
@@ -126,12 +138,12 @@ public class TestPlayer implements Player{
 //              float[] labLines = getLABColor(20,70,random);
 //              float[] rgbLines = ic.toRGB(labLines);
                 
-                if ( rows < 70 || cols < 70 ) {
+                if ( rows < 80 || cols < 80 ) {
                 	for ( i=0; i < sos[1].length; i++) {
                 		sos[1][i] = state.FREE;
                 	}
                 	for ( i=0; i < fibo[1].length; i++) {
-                		sos[1][i] = state.FREE;
+                		fibo[1][i] = state.FREE;
                 	}
                 }
                 
@@ -141,23 +153,25 @@ public class TestPlayer implements Player{
                 
                 //embed two numbers and the + sign
                 if(embedMathPuzzle(solution, rows, cols, random, 5, 7)) puzzles++;
-                else log.debug("math 1 can't fit");
+                else log.warn("math 1 can't fit");
                 if(embedMathPuzzle(solution, rows, cols, random, 3, 6)) puzzles++;
-                else log.debug("math 2 can't fit");
+                else log.warn("math 2 can't fit");
 //              if(embedMathPuzzle(solution, rows, cols, random, 2, 8)) puzzles++;
-//              else log.debug("math 2 can't fit");
+//              else log.warn("math 2 can't fit");
                 if( embedPuzzle( solution, tieFighter, rows, cols, random )) puzzles++;
-                else log.debug("tiefighter can't fit");
+                else log.warn("tiefighter can't fit");
                 if( embedPuzzle( solution, vaderFighter, rows, cols, random )) puzzles++;
-                else log.debug("vader can't fit");
+                else log.warn("vader can't fit");
                 if( embedPuzzle( solution, xWingFighter, rows, cols, random )) puzzles++;
-                else log.debug("xWingFighter can't fit");
-                if( embedPuzzle( solution, sos, rows, cols, random )) puzzles++;
-                else log.debug("sos can't fit");
+                else log.warn("xWingFighter can't fit");
                 if( embedPuzzle( solution, eye, rows, cols, random )) puzzles++;
-                else log.debug("eye can't fit");
+                else log.warn("eye can't fit");
+                if( embedPuzzle( solution, sos, rows, cols, random )) puzzles++;
+                else log.warn("sos can't fit");
                 if( embedPuzzle( solution, fibo, rows, cols, random )) puzzles++;
-                else log.debug("fibo can't fit");
+                else log.warn("fibo can't fit");
+                if( embedPuzzle( solution, pi, rows, cols, random )) puzzles++;
+                else log.warn("pi can't fit");
                 
                 solution.setNo_of_puzzles(puzzles);
                 return solution;
@@ -293,14 +307,19 @@ public class TestPlayer implements Player{
         }
 
         private void setPuzzle( GridSolution solution, Point start, state[][] puzzle, Color color ) {
-                for ( int i = 0; i < puzzle.length; i++ ) {
+        	for ( int i = 0; i < puzzle.length; i++ ) {
                         for ( int j = 0; j < puzzle[0].length; j++ ) {
+                			String p = puzzle[i][j]==state.USED? " o ":"   ";
+                			System.out.print(p);
                                 if ( puzzle[i][j] == state.USED ) {
                                         solution.GridColors[start.x + i][start.y + j] = color;
+                                        //solution.GridColors[start.x + i][start.y + j] = color;
                                         usable[start.x + i][start.y + j] = state.USED;
                                 }
                         }
+                		System.out.println();
                 }
+        	System.out.println();
         }
 
         private Point foundSpaceForPuzzle(state[][] puzzle, int rows, int cols,
@@ -360,9 +379,9 @@ public class TestPlayer implements Player{
 
         private float[] getRGB(Random random) {
                 float[] rgb = { 0,0,0 };
-        rgb[0] = random.nextFloat() * .5f + .4f;
-        rgb[1] = random.nextFloat() * .5f + .4f;
-        rgb[2] = random.nextFloat() * .5f + .4f;
+        rgb[0] = random.nextFloat() * .5f + .45f;
+        rgb[1] = random.nextFloat() * .5f + .45f;
+        rgb[2] = random.nextFloat() * .5f + .45f;
         //log.debug(rgb[0]+','+rgb[1]+','+rgb[2]);
                 return rgb;
         }
