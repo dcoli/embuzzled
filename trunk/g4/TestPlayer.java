@@ -72,7 +72,7 @@ public class TestPlayer implements Player{
                 { state.USED, state.FREE, state.USED, state.FREE, state.USED, state.FREE, state.USED, state.USED, state.FREE, state.USED, state.USED,state. FREE, state.USED, state.USED, state.FREE, state.USED, state.FREE, state.USED, state.FREE, state.USED },
                 { state.USED, state.FREE, state.USED, state.FREE, state.USED, state.FREE, state.USED, state.USED, state.FREE, state.USED, state.USED,state. FREE, state.USED, state.USED, state.FREE, state.USED, state.FREE, state.USED, state.FREE, state.USED }
         };
-
+        
         private state[][] fibo = {
         		{ state.USED, state.FREE, state.USED, state.USED, state.FREE, state.USED, state.USED, state.USED, state.FREE, state.USED, state.USED,state. USED, state.USED, state.USED, },
                 { state.USED, state.FREE, state.USED, state.USED, state.FREE, state.USED, state.USED, state.USED, state.FREE, state.USED, state.USED,state. USED, state.USED, state.USED, }
@@ -125,6 +125,16 @@ public class TestPlayer implements Player{
                 
 //              float[] labLines = getLABColor(20,70,random);
 //              float[] rgbLines = ic.toRGB(labLines);
+                
+                if ( rows < 70 || cols < 70 ) {
+                	for ( i=0; i < sos[1].length; i++) {
+                		sos[1][i] = state.FREE;
+                	}
+                	for ( i=0; i < fibo[1].length; i++) {
+                		sos[1][i] = state.FREE;
+                	}
+                }
+                
                 
                 embedArithmeticLines( solution, random, rows, cols );
                 puzzles++;
