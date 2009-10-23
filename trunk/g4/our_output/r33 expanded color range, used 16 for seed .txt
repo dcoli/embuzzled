@@ -1,0 +1,79 @@
+There is a mathematic puzzle with:
+Two numbers in 18,14 and 23,41
+One + sign in 19,32
+And one = sign in 20,37
+The solution is 12 (after adding the number of blocks in each number)
+
+There is a mathematic puzzle with:
+Two numbers in 14,11 and 38,30
+One + sign in 15,38
+And one = sign in 21,53
+The solution is 9 (after adding the number of blocks in each number)
+
+There is a Tie Fighter (from Star Wars) starting in 12,47
+ o                       o 
+                           
+ o           o           o 
+ o        o     o        o 
+ o  o  o     o     o  o  o 
+ o        o     o        o 
+ o           o           o 
+                           
+ o                       o 
+
+
+There is a Darth Vader Tie Fighter (from Star Wars) starting in 24,44
+       o           o       
+    o                 o    
+ o           o           o 
+ o        o     o        o 
+ o  o  o     o     o  o  o 
+ o        o     o        o 
+ o           o           o 
+    o                 o    
+       o           o       
+
+
+There is an X-Wing (from Star Wars) starting in 28,15
+ o              o              o 
+    o  o     o  o  o     o  o    
+          o  o     o  o          
+          o  o     o  o          
+    o  o     o  o  o     o  o    
+ o           o  o  o           o 
+                o                
+
+
+There is an eye starting in 1,11
+             o  o  o             
+       o  o     o     o  o       
+    o        o     o        o    
+ o           o     o           o 
+    o        o     o        o    
+       o  o     o     o  o       
+             o  o  o             
+
+
+There is a SOS code starting in 7,33
+ o     o     o     o  o     o  o     o  o     o     o     o 
+                                                            
+
+
+There is a Fibonacci sequence starting in 13,6
+ o     o  o     o  o  o     o  o  o  o  o 
+                                          
+
+
+There is a pi representation starting in 25,33
+                   o 
+                   o 
+                   o 
+                   o 
+                o  o 
+          o     o  o 
+ o        o     o  o 
+ o        o     o  o 
+ o     o  o  o  o  o 
+
+
+

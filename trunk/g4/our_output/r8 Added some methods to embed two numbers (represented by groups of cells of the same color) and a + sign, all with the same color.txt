@@ -1,0 +1,1 @@
+The number of columns before the black one follows an arithmetic succession with common difference = 1
