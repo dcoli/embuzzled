@@ -1,0 +1,1 @@
+The number of white columns follows an arithmetic succession with common difference = 1
